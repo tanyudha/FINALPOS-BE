@@ -1,0 +1,632 @@
+swagger: "2.0"
+info:
+  description: "This is a simple documentation for moka clone backend"
+  version: "1.0.0"
+  title: "Moka Clone BE"
+schemes:
+- "https"
+- "http"
+paths:
+  /shift/all-shift:
+    get:
+      tags:
+      - "shift"
+      summary: "Get all shift"
+      description: "Auth: Admin"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Shift"
+      security:
+      - auth: [kasir]
+  /shift/get-active-shift:
+    get:
+      tags:
+      - "shift"
+      summary: "Get active shift"
+      description: "Auth: Kasir"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Shift"
+      security:
+      - auth: [admin]
+  /shift/create-shift:
+    post:
+      tags:
+      - "shift"
+      summary: "Creates a new shift."
+      description: "Auth: Kasir"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: Shift
+          description: The shift to create.
+          schema:
+            type: object
+            required:
+              - starting_cash
+            properties:
+              starting_cash:
+                type: number
+      responses:
+        200:
+          description: Created
+          schema:
+            $ref: "#/definitions/Shift"
+      security:
+      - auth: [kasir]
+  /shift/add-expenses:
+    post:
+      tags:
+      - "shift"
+      summary: "Creates new expenses."
+      description: "Auth: Kasir"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: expenses
+          description: The expenses to create.
+          schema:
+            type: object
+            required:
+              - id
+              - expenses
+            properties:
+              id:
+                type: number
+              expenses:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Expense"
+      responses:
+        200:
+          description: Created
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      security:
+      - auth: [kasir]
+  /shift/end-shift:
+    post:
+      tags:
+      - "shift"
+      summary: "End current active shift."
+      description: "Auth: Kasir"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: shift
+          description: The shift if and actual ending cash to end.
+          schema:
+            type: object
+            required:
+              - id
+              - actual_ending_cash
+            properties:
+              id:
+                type: number
+              actual_ending_cash:
+                type: number
+      responses:
+        200:
+          description: Created
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      security:
+      - auth: [kasir]
+  /cart/all-cart:
+    get:
+      tags:
+      - "cart"
+      summary: "Get all cart"
+      description: "Auth: Kasir, Pegawai"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Transaction"
+      security:
+      - auth: [kasir]
+  /cart/detail/{id}:
+    get:
+      tags:
+      - "cart"
+      summary: "Get all cart"
+      description: "Auth: Kasir, Pegawai"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of cart to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/TransactionAll"
+        "404":
+          description: "cart not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      security:
+      - auth: [kasir]
+  /cart/create-cart:
+    post:
+      tags:
+      - "cart"
+      summary: "Creates a new cart."
+      description: "Auth: Kasir, Pegawai"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: cart
+          description: The cart to create.
+          schema:
+            type: object
+            required:
+              - customer_id
+              - customer_name
+              - customer_phone
+            properties:
+              customer_id:
+                type: number
+              customer_name:
+                type: string
+              customer_phone:
+                type: string
+      responses:
+        200:
+          description: Created
+          schema:
+            $ref: "#/definitions/Transaction"
+      security:
+      - auth: [kasir]
+  /cart/update-cart:
+    put:
+      tags:
+      - "cart"
+      summary: "Update a cart. (CRUD Cart items, and checkout)"
+      description: "Auth: Kasir, Pegawai"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: cart
+          description: The cart to update.
+          schema:
+            $ref: "#/definitions/TransactionAll"
+      responses:
+        200:
+          description: Created
+          schema:
+            $ref: "#/definitions/TransactionAll"
+      security:
+      - auth: [kasir, pegawai]
+  /invoice/all/{date}:
+    get:
+      tags:
+      - "invoice"
+      summary: "Get all invoice on date"
+      description: "Auth: Admin"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "date"
+        in: "path"
+        description: "Date on which invoices created"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Invoice"
+        "404":
+          description: "invoice not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      security:
+      - auth: [admin]
+  /invoice/detail/{id}:
+    get:
+      tags:
+      - "invoice"
+      summary: "Get invoice detail"
+      description: "Auth: Admin"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of invoice to return"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/InvoiceAll"
+        "404":
+          description: "invoice not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      security:
+      - auth: [admin]
+  /invoice/cancel-invoice:
+    put:
+      tags:
+      - "invoice"
+      summary: "Cancel invoice with certain id"
+      description: "Auth: Admin"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - in: body
+          name: id
+          description: ID of invoice to be cancelled.
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: number
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Invoice"
+        "404":
+          description: "invoice not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      security:
+      - auth: [admin]
+  /invoice/pay-invoice:
+    put:
+      tags:
+      - "invoice"
+      summary: "Cancel invoice with certain id"
+      description: "Auth: Admin"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - in: body
+          name: id
+          description: ID of invoice to be cancelled.
+          schema:
+            type: object
+            required:
+              - id
+              - invoice_payment_method
+            properties:
+              id:
+                type: number
+              invoice_payment_method:
+                type: string
+                enum : [Cash, Transfer]
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Invoice"
+        "404":
+          description: "invoice not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      security:
+      - auth: [admin]
+  /invoice/delete-invoice:
+    delete:
+      tags:
+      - "invoice"
+      summary: "Delete invoice with certain id"
+      description: "Auth: Admin"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - in: body
+          name: id
+          description: ID of invoice to be cancelled.
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: number
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Invoice"
+        "404":
+          description: "invoice not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      security:
+      - auth: [admin]
+securityDefinitions:
+  auth:
+    type: oauth2
+    flow: accessCode
+    authorizationUrl: https://moka.com/auth/getUser
+    tokenUrl: https://moka.com/auth/getToken
+    scopes:
+      admin: Grants admin level authorization
+      kasir: Grants kasir level authorization
+      pegawai: Grants pegawai level authorization
+      PO: Grants PO level authorization
+definitions:
+  Shift:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      cashier_name:
+        type: "string"
+      starting_cash:
+        type: "number"
+      cash_from_transaction:
+        type: "number"
+      cash_from_invoice:
+        type: "number"
+      transfer_from_transaction:
+        type: "number"
+      transfer_from_invoice:
+        type: "number"
+      expected_ending_cash:
+        type: "number"
+      actual_ending_cash:
+        type: "number"
+      starting_shift:
+        type: "string"
+      ending_shift:
+        type: "string"
+      cashier_id:
+        type: "integer"
+    xml:
+      name: "Shift"
+  Expense:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      judul:
+        type: "string"
+      deskripsi:
+        type: "string"
+      total:
+        type: "number"
+      createdAt:
+        type: "number"
+    xml:
+      name: "Expense"
+  Item:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      stock:
+        type: "integer"
+      price_retail:
+        type: "number"
+      price_wholesaller:
+        type: "number"
+      createdAt:
+        type: "string"
+    xml:
+      name: "Item"
+  Transaction:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      customer_name:
+        type: "string"
+      customer_phone:
+        type: "string"
+      cashier_name:
+        type: "string"
+      employee_name:
+        type: "string"
+      total:
+        type: "number"
+      createdAt:
+        type: "string"
+      transaction_method:
+        type: "string"
+        enum:
+        - "Cart"
+        - "Transfer"
+        - "Cash"
+        - "Invoice"
+  TransactionDetail:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      qty:
+        type: "integer"
+      price:
+        type: "number"
+      price_sum:
+        type: "number"
+      createdAt:
+        type: "string"
+      item_id:
+        type: "number"
+      item:
+        $ref: "#/definitions/Item"
+      discounts:
+        type: "array"
+        items:
+          $ref: "#/definitions/Discount"
+  Discount:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      is_percentage:
+        type: "boolean"
+      amount:
+        type: "number"
+      percentage:
+        type: "number"
+        minimum: 0
+        maximum : 100
+      is_active:
+        type: "boolean"
+  TransactionAll:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      customer_name:
+        type: "string"
+      customer_phone:
+        type: "string"
+      cashier_name:
+        type: "string"
+      employee_name:
+        type: "string"
+      total:
+        type: "number"
+      createdAt:
+        type: "string"
+      transaction_method:
+        type: "string"
+        enum:
+        - "Cart"
+        - "Transfer"
+        - "Cash"
+        - "Invoice"
+      transaction_details:
+        type: "array"
+        items:
+          $ref: "#/definitions/TransactionDetail"
+  Invoice:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      invoice_payment_method:
+        type: "string"
+        enum:
+        - "Cash"
+        - "Transfer"
+      invoice_status:
+        type: "string"
+        enum:
+        - "Paid"
+        - "Unpaid"
+        - "Cancelled"
+      invoice_due_date:
+        type: "string"
+      createdAt:
+        type: "string"
+      paidAt:
+        type: "string"
+  InvoiceAll:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      invoice_payment_method:
+        type: "string"
+        enum:
+        - "Cash"
+        - "Transfer"
+      invoice_status:
+        type: "string"
+        enum:
+        - "Paid"
+        - "Unpaid"
+        - "Cancelled"
+      invoice_due_date:
+        type: "string"
+      createdAt:
+        type: "string"
+      paidAt:
+        type: "string"
+      transaction:
+        $ref: "#/definitions/TransactionAll"
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      username:
+        type: "string"
+      name:
+        type: "string"
+      password:
+        type: "string"
+      role:
+        type: "string"
+        enum:
+        - "Kasir"
+        - "PO"
+        - "Pegawai"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

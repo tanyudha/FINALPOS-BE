@@ -1,0 +1,28 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"module": "commonjs",
+		"outDir": "./dist",
+		"rootDir": "./",
+		"baseUrl": "./",
+		"paths": {
+			"API": ["API"],
+			"API/*": ["API/*"],
+			"Loaders": ["Loaders"],
+			"Loaders/*": ["Loaders/*"],
+			"Middleware": ["Middleware"],
+			"Middleware/*": ["Middleware/*"],
+			"Models": ["Models"],
+			"Models/*": ["Models/*"],
+			"Services": ["Services"],
+			"Services/*": ["Services/*"],
+			"Utils": ["Utils"],
+			"Utils/*": ["Utils/*"],
+			"Uploads": ["Uploads"],
+			"Uploads/*": ["Uploads/*"]
+		},
+		"esModuleInterop": true
+	},
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+	"exclude": ["node_modules"]
+}
